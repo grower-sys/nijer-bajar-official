@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Trending Products | NIJER BAJAR</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+   
+<div class="top-tagline">
+    Your Trusted Responsible Brand
+</div>
+
+<header class="header">
+
+      
+<a href="index.html" class="logo">
+    <img src="images/logo.png" alt="Nijer Bajar Logo">
+</a>
+
+    
+<nav class="nav">
+
+    <a href="index.html">Home</a>
+
+    <a href="popular.html">Popular</a>
+
+    <a href="beauty.html">Beauty Care</a>
+
+    <a href="clothing.html">Clothing</a>
+
+    <a href="toys.html">Toys & More</a>
+
+    <a href="foods.html">Foods & Grocery</a>
+
+    <a href="affiliate.html">Trending Products</a>
+
+    <a href="cart.html" class="cart">
+        🛒 Cart (0)
+    </a>
+
+</nav>
+
+
+</header>
+
+
+    <!-- Trending Products Section -->
+
+    <section class="products-section">
+
+
+        <div class="section-title">
+
+            <p>
+                TRENDING PRODUCTS
+            </p>
+
+            <h1>
+                Trending Products
+            </h1>
+
+            <span>
+                Discover trending products
+            </span>
+
+        </div>
+
+
+
+        <!-- Products will load automatically -->
+
+        <div
+            class="product-grid"
+            id="affiliate-product-grid"
+        >
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- Affiliate Products API -->
+
+    <script>
+
+        const AFFILIATE_API_URL =
+            "https://script.google.com/macros/s/AKfycbyMnxQWKH3M7kCQQsHhf91heihs9bg5zdpIxxgKq-N6Jg46a9NykRscsxrUrvdR1-1UhQ/exec?type=affiliate";
+
+
+        const affiliateGrid =
+            document.getElementById(
+                "affiliate-product-grid"
+            );
+
+
+        if (affiliateGrid) {
+
+            fetch(AFFILIATE_API_URL)
+
+                .then(function(response) {
+
+                    return response.json();
+
+                })
+
+
+                .then(function(products) {
+
+                    affiliateGrid.innerHTML = "";
+
+
+                    products.forEach(function(product) {
+
+
+                        const card =
+                            document.createElement("div");
+
+
+                        card.className =
+                            "product-card";
+
+
+                        card.innerHTML = `
+
+                            <div class="product-image">
+
+                                <img
+                                    src="${product['Image URL']}"
+                                    alt="${product['Product Name']}"
+                                >
+
+                            </div>
+
+
+                            <div class="product-info">
+
+
+                                <p class="product-category">
+                                    Trending
+                                </p>
+
+
+                                <h3>
+                                    ${product['Product Name']}
+                                </h3>
+
+
+                                <p style="font-size:13px;color:#777;margin-bottom:10px;line-height:1.5;">
+                                    ${product.Description}
+                                </p>
+
+
+                                <div class="rating">
+                                    ${'★'.repeat(
+                                        Number(product.Rating) || 0
+                                    )}
+                                </div>
+
+
+                                <div class="price">
+
+                                    <span>
+                                        ৳${product.Price}
+                                    </span>
+
+
+                                    ${
+                                        product['Old Price']
+                                        ? `<del>৳${product['Old Price']}</del>`
+                                        : ''
+                                    }
+
+                                </div>
+
+
+                                <div class="product-buttons">
+
+                                    <button
+                                        class="buy-btn"
+                                        type="button"
+                                    >
+                                        Buy Now
+                                    </button>
+
+                                </div>
+
+
+                            </div>
+
+                        `;
+
+
+                        const buyButton =
+                            card.querySelector(
+                                ".buy-btn"
+                            );
+
+
+                        buyButton.addEventListener(
+                            "click",
+                            function() {
+
+
+                                if (
+                                    product["Affiliate URL"]
+                                ) {
+
+
+                                    window.open(
+                                        product["Affiliate URL"],
+                                        "_blank"
+                                    );
+
+
+                                } else {
+
+
+                                    alert(
+                                        "Product link is not available."
+                                    );
+
+
+                                }
+
+                            }
+                        );
+
+
+                        affiliateGrid.appendChild(
+                            card
+                        );
+
+
+                    });
+
+                })
+
+
+                .catch(function(error) {
+
+
+                    console.error(
+                        "Affiliate product loading error:",
+                        error
+                    );
+
+
+                    affiliateGrid.innerHTML = `
+
+                        <p style="text-align:center;width:100%;color:#777;">
+                            Trending products could not be loaded.
+                        </p>
+
+                    `;
+
+
+                });
+
+        }
+
+    </script>
+
+
+
+    <!-- FOOTER -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- BRAND -->
+
+        <div class="footer-column">
+
+            <h3>নিজের বাজার</h3>
+
+            <p>
+                Your Trusted Responsible Brand
+            </p>
+
+            <p>
+                Quality products with a simple and
+                trusted shopping experience.
+            </p>
+
+        </div>
+
+
+        <!-- QUICK LINKS -->
+
+        <div class="footer-column">
+
+            <h3>Quick Links</h3>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="popular.html">
+                Popular
+            </a>
+
+            <a href="beauty.html">
+                Beauty Care
+            </a>
+
+            <a href="clothing.html">
+                Clothing
+            </a>
+
+        </div>
+
+
+        <!-- CUSTOMER SUPPORT -->
+
+        <div class="footer-column">
+
+            <h3>Customer Support</h3>
+
+            <a href="about.html">
+                About Us
+            </a>
+
+            <a href="contact.html">
+                Contact Us
+            </a>
+
+            <a href="cart.html">
+                Cart & Order
+            </a>
+
+            <a href="terms.html">
+                Terms & Conditions
+            </a>
+
+            <a href="return-refund.html">
+                Return & Refund Policy
+            </a>
+
+            <a href="privacy.html">
+    Privacy Policy
+</a>
+
+        </div>
+
+
+        <!-- FOLLOW US -->
+
+        <div class="footer-column">
+
+            <h3>Follow Us</h3>
+
+            <a href="#" target="_blank">
+                Facebook
+            </a>
+
+            <a href="#" target="_blank">
+                Instagram
+            </a>
+
+            <a href="#" target="_blank">
+                TikTok
+            </a>
+
+            <a href="#" target="_blank">
+                YouTube
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER BOTTOM -->
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 NIJER BAJAR. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>

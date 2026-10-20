@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | নিজের বাজার</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .contact-page{padding:70px 6%;background:#faf9f6;min-height:70vh}
+    .contact-container{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:25px}
+    .contact-card{background:#f1eee7;border:1px solid #ddd7ca;border-radius:10px;padding:30px;min-width:0}
+    .contact-card h2{margin:0 0 12px;color:#111;font-size:22px}
+    .contact-card>p{color:#666;font-size:14px;line-height:1.7;margin:0 0 25px}
+    .contact-item{padding:15px 0;border-bottom:1px solid #ddd7ca;display:flex;flex-direction:column;gap:5px}
+    .contact-item:last-child{border-bottom:none}
+    .contact-item strong{color:#222;font-size:14px}
+    .contact-item span,.contact-item a{color:#666;font-size:13px;overflow-wrap:anywhere}
+    .contact-form{display:flex;flex-direction:column;gap:9px}
+    .contact-form label{font-weight:600;font-size:14px;color:#242424;margin-top:7px}
+    .contact-form input,.contact-form textarea{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #d7cfbd;border-radius:8px;background:#fff;color:#222;font:inherit;font-size:14px}
+    .contact-form textarea{resize:vertical;min-height:125px}
+    .contact-form input:focus,.contact-form textarea:focus{outline:2px solid #c69a29;outline-offset:1px}
+    .contact-submit{margin-top:12px;padding:13px 20px;background:#bb8e19;color:#fff;border:0;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+    .contact-submit:hover{background:#987015}
+    .contact-note{font-size:12px;color:#666;line-height:1.6;margin:5px 0 0}
+    @media(max-width:700px){.contact-page{padding:50px 4%}.contact-container{grid-template-columns:1fr;gap:15px}.contact-card{padding:22px}.contact-card h2{font-size:19px}}
+  </style>
+</head>
+<body>
+  <div class="top-tagline">Your Trusted Responsible Brand</div>
+  <header class="header">
+    <a href="index.html" class="logo"><img src="images/logo.png" alt="Nijer Bajar Logo"></a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="popular.html">Popular</a>
+      <a href="beauty.html">Beauty Care</a>
+      <a href="clothing.html">Clothing</a>
+      <a href="toys.html">Toys &amp; More</a>
+      <a href="foods.html">Foods &amp; Grocery</a>
+      <a href="affiliate.html">Trending Products</a>
+      <a href="cart.html" class="cart">🛒 Cart (0)</a>
+    </nav>
+  </header>
+  <main>
+    <section class="contact-page">
+      <div class="section-title">
+        <p>GET IN TOUCH</p>
+        <h1>Contact Us</h1>
+        <span>We are here to help you with your shopping experience</span>
+      </div>
+      <div class="contact-container">
+        <div class="contact-card">
+          <h2>Customer Support</h2>
+          <p>Have a question about a product, order or delivery? Feel free to contact us.</p>
+          <div class="contact-item"><strong>📞 Phone</strong><span>01XXXXXXXXX</span></div>
+          <div class="contact-item"><strong>✉ Email</strong><a href="mailto:skdhcontactus@gmail.com">skdhcontactus@gmail.com</a></div>
+          <div class="contact-item"><strong>📍 Location</strong><span>Bangladesh</span></div>
+          <div class="contact-item"><strong>🕐 Support Hours</strong><span>Saturday - Thursday</span></div>
+        </div>
+        <div class="contact-card">
+          <h2>Send Us a Message</h2>
+          <p>Fill out the form below to prepare an email to our support team.</p>
+          <form id="contactForm" class="contact-form">
+            <label for="contactName">Full Name *</label>
+            <input id="contactName" name="name" type="text" placeholder="Enter your full name" autocomplete="name" required>
+            <label for="contactEmail">Email Address *</label>
+            <input id="contactEmail" name="email" type="email" placeholder="Enter your email address" autocomplete="email" required>
+            <label for="contactPhone">Phone Number</label>
+            <input id="contactPhone" name="phone" type="tel" placeholder="Enter your phone number" autocomplete="tel">
+            <label for="contactSubject">Subject *</label>
+            <input id="contactSubject" name="subject" type="text" placeholder="What is your message about?" required>
+            <label for="contactMessage">Your Message *</label>
+            <textarea id="contactMessage" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+            <button type="submit" class="contact-submit">Send Message</button>
+            <p class="contact-note" id="contactStatus" role="status" aria-live="polite">Clicking Send Message opens your email app. Please press Send there to deliver your message.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-column"><h3>নিজের বাজার</h3><p>Your Trusted Responsible Brand</p><p>Quality products with a simple and trusted shopping experience.</p></div>
+      <div class="footer-column"><h3>Quick Links</h3><a href="index.html">Home</a><a href="popular.html">Popular</a><a href="beauty.html">Beauty Care</a><a href="clothing.html">Clothing</a></div>
+      <div class="footer-column"><h3>Customer Support</h3><a href="about.html">About Us</a><a href="contact.html">Contact Us</a><a href="cart.html">Cart &amp; Order</a><a href="terms.html">Terms &amp; Conditions</a><a href="return-refund.html">Return &amp; Refund Policy</a><a href="privacy.html">Privacy Policy</a></div>
+      <div class="footer-column"><h3>Follow Us</h3><a href="#" target="_blank" rel="noopener noreferrer">Facebook</a><a href="#" target="_blank" rel="noopener noreferrer">Instagram</a><a href="#" target="_blank" rel="noopener noreferrer">TikTok</a><a href="#" target="_blank" rel="noopener noreferrer">YouTube</a></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 NIJER BAJAR. All Rights Reserved.</p></div>
+  </footer>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!this.reportValidity()) return;
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const phone = document.getElementById('contactPhone').value.trim();
+      const subject = document.getElementById('contactSubject').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      const body = `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`;
+      const mailto = 'mailto:skdhcontactus@gmail.com?subject=' + encodeURIComponent('Nijer Bajar Contact: ' + subject) + '&body=' + encodeURIComponent(body);
+      document.getElementById('contactStatus').textContent = 'Your email app should open now. Please click Send in the email app to deliver the message.';
+      window.location.href = mailto;
+    });
+  </script>
+</body>
+</html>
