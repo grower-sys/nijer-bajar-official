@@ -115,7 +115,11 @@ function addRemoveButtons() {
     );
 }
 
-// ORDER SUMMARY
+
+/* =========================
+   ORDER SUMMARY
+========================= */
+
 function getSubtotal() {
     return cart.reduce(function(total, product) {
         const price = Number(
@@ -132,8 +136,10 @@ function updateOrderSummary() {
 
     const subtotalElement = rows[0]
         ? rows[0].querySelector('strong') : null;
+
     const deliveryElement = rows[1]
         ? rows[1].querySelector('strong') : null;
+
     const totalElement = document.querySelector(
         '.order-summary .summary-total strong'
     );
@@ -157,11 +163,19 @@ deliveryOptions.forEach(function(option) {
 displayCartProducts();
 updateOrderSummary();
 
-// GOOGLE SHEET ORDER CONNECTION
+
+/* =========================
+   GOOGLE SHEET ORDER CONNECTION
+========================= */
+
 const GOOGLE_SHEET_URL =
     "https://script.google.com/macros/s/AKfycbxcOrlN_lu6Fk_uS42FwbgVajln_o70OVCRuh1-bfRkXWfiwqwtYUPE9x5smA-f-Ca0/exec";
 
-// DIVISION AND DISTRICT
+
+/* =========================
+   DIVISION AND DISTRICT
+========================= */
+
 const divisionSelect = document.getElementById('division');
 const districtSelect = document.getElementById('district');
 
@@ -207,8 +221,44 @@ const districts = {
     ]
 };
 
+
+/* =========================
+   AUTO DELIVERY BY DISTRICT
+========================= */
+
+function updateDeliveryByDistrict() {
+    if (!districtSelect) return;
+
+    const district = districtSelect.value.trim().toLowerCase();
+
+    const insideDhaka = document.querySelector(
+        'input[name="delivery"][value="inside"]'
+    );
+
+    const outsideDhaka = document.querySelector(
+        'input[name="delivery"][value="outside"]'
+    );
+
+    if (district === 'dhaka') {
+        if (insideDhaka) insideDhaka.checked = true;
+    } else if (district !== '') {
+        if (outsideDhaka) outsideDhaka.checked = true;
+    } else {
+        if (insideDhaka) insideDhaka.checked = true;
+    }
+
+    updateOrderSummary();
+}
+
+
+/* =========================
+   DIVISION CHANGE
+========================= */
+
 if (divisionSelect && districtSelect) {
+
     divisionSelect.addEventListener('change', function() {
+
         districtSelect.innerHTML =
             '<option value="">Select District</option>';
 
@@ -218,16 +268,91 @@ if (divisionSelect && districtSelect) {
             option.textContent = district;
             districtSelect.appendChild(option);
         });
+
+        updateDeliveryByDistrict();
     });
+
+    districtSelect.addEventListener(
+        'change',
+        updateDeliveryByDistrict
+    );
 }
 
-// CONFIRM ORDER
+
+/* =========================
+   BKASH & ROCKET PAYMENT
+========================= */
+
+const paymentOptions = document.querySelectorAll(
+    'input[name="payment"]'
+);
+
+const advancePaymentDetails = document.getElementById(
+    'advance-payment-details'
+);
+
+const paymentTitle = document.getElementById(
+    'payment-instructions-title'
+);
+
+const paymentReceiver = document.getElementById(
+    'payment-receiver-number'
+);
+
+const paymentAmount = document.getElementById(
+    'payment-amount'
+);
+
+// Replace with your own payment numbers
+const BKASH_NUMBER = '01896140043';
+const ROCKET_NUMBER = '01896140043';
+
+function updatePaymentMethod() {
+    const selected = document.querySelector(
+        'input[name="payment"]:checked'
+    );
+
+    if (!selected || !advancePaymentDetails) return;
+
+    if (selected.value === 'cod') {
+        advancePaymentDetails.style.display = 'none';
+        return;
+    }
+
+    advancePaymentDetails.style.display = 'block';
+
+    if (selected.value === 'bkash') {
+        paymentTitle.textContent = 'bKash Payment Instructions';
+        paymentReceiver.textContent = BKASH_NUMBER;
+    } else if (selected.value === 'rocket') {
+        paymentTitle.textContent = 'Rocket Payment Instructions';
+        paymentReceiver.textContent = ROCKET_NUMBER;
+    }
+
+    paymentAmount.textContent =
+        '৳' + (getSubtotal() + getDeliveryCharge());
+}
+
+paymentOptions.forEach(function(option) {
+    option.addEventListener('change', updatePaymentMethod);
+});
+
+updatePaymentMethod();
+
+
+
+/* =========================
+   CONFIRM ORDER
+========================= */
+
 const confirmOrderButton = document.getElementById(
     'confirm-order-btn'
 );
 
 if (confirmOrderButton) {
-    confirmOrderButton.addEventListener('click', function() {
+
+    confirmOrderButton.addEventListener('click', async function() {
+
         const name = document.getElementById('name').value.trim();
         const mobile = document.getElementById('mobile').value.trim();
         const district = document.getElementById('district').value;
@@ -244,10 +369,45 @@ if (confirmOrderButton) {
             return;
         }
 
+        // Update delivery based on district
+        updateDeliveryByDistrict();
+
         const deliveryCharge = getDeliveryCharge();
+
         const delivery = deliveryCharge === 120
             ? 'Outside Dhaka - ৳120'
             : 'Inside Dhaka - ৳80';
+
+        // Payment method
+        const selectedPayment = document.querySelector(
+            'input[name="payment"]:checked'
+        );
+
+        const paymentMethod = selectedPayment
+            ? selectedPayment.value
+            : 'cod';
+
+        let paymentStatus = 'Unpaid';
+        let senderNumber = '';
+        let transactionId = '';
+
+        if (paymentMethod === 'bkash' || paymentMethod === 'rocket') {
+
+            senderNumber = document.getElementById(
+                'payment-sender'
+            ).value.trim();
+
+            transactionId = document.getElementById(
+                'payment-transaction'
+            ).value.trim();
+
+            if (!senderNumber || !transactionId) {
+                alert('Please enter payment number and Transaction ID.');
+                return;
+            }
+
+            paymentStatus = 'Pending Verification';
+        }
 
         const products = cart.map(function(product) {
             return product.name + ' - ' + product.price;
@@ -261,31 +421,55 @@ if (confirmOrderButton) {
             address: district + ', ' + area + ', ' + address,
             delivery: delivery,
             products: products,
-            total: '৳' + (getSubtotal() + deliveryCharge)
+            total: '৳' + (getSubtotal() + deliveryCharge),
+
+            paymentMethod: paymentMethod,
+            paymentStatus: paymentStatus,
+            senderNumber: senderNumber,
+            transactionId: transactionId
         };
 
-        fetch(GOOGLE_SHEET_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(orderData)
-        });
+        confirmOrderButton.disabled = true;
+        confirmOrderButton.textContent = 'Submitting...';
 
-        const successModal = document.getElementById('success-modal');
-        if (successModal) {
-            successModal.classList.add('show');
+        try {
+            await fetch(GOOGLE_SHEET_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            const successModal = document.getElementById('success-modal');
+
+            if (successModal) {
+                successModal.classList.add('show');
+            }
+
+        } catch (error) {
+            console.error('Order submission error:', error);
+            alert('Could not submit order. Please try again.');
+        } finally {
+            confirmOrderButton.disabled = false;
+            confirmOrderButton.textContent = 'Confirm Order';
         }
     });
 }
 
-// SUCCESS POPUP
+
+/* =========================
+   SUCCESS POPUP
+========================= */
+
 const successOkButton = document.getElementById('success-ok-btn');
 const successModal = document.getElementById('success-modal');
 
 if (successOkButton && successModal) {
+
     successOkButton.addEventListener('click', function() {
+
         successModal.classList.remove('show');
 
         cart = [];
@@ -296,18 +480,30 @@ if (successOkButton && successModal) {
         const form = document.querySelector('.customer-form form');
         if (form) form.reset();
 
+        if (districtSelect) {
+            districtSelect.innerHTML =
+                '<option value="">Select District</option>';
+        }
+
         const insideDelivery = document.querySelector(
             'input[name="delivery"][value="inside"]'
         );
+
         if (insideDelivery) insideDelivery.checked = true;
 
         updateOrderSummary();
     });
 }
 
-// BUY NOW FOR STATIC PRODUCTS
+
+/* =========================
+   BUY NOW FOR STATIC PRODUCTS
+========================= */
+
 document.querySelectorAll('.buy-btn').forEach(function(button) {
+
     button.addEventListener('click', function() {
+
         const card = this.closest('.product-card');
         if (!card) return;
 
@@ -323,13 +519,19 @@ document.querySelectorAll('.buy-btn').forEach(function(button) {
     });
 });
 
-// SCROLL TO CUSTOMER INFORMATION
+
+/* =========================
+   SCROLL TO CUSTOMER INFORMATION
+========================= */
+
 if (window.location.hash === '#customer-information') {
+
     const customerInformation = document.getElementById(
         'customer-information'
     );
 
     if (customerInformation) {
+
         setTimeout(function() {
             customerInformation.scrollIntoView({
                 behavior: 'smooth',
@@ -338,6 +540,7 @@ if (window.location.hash === '#customer-information') {
         }, 300);
     }
 }
+
 
 /* ==========================================
    GOOGLE SHEET PRODUCT API
