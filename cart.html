@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="bn">
 
@@ -286,25 +286,87 @@
                     </label>
 
 
-                    <!-- PAYMENT -->
+                    
+<!-- PAYMENT -->
 
-                    <h3 class="form-heading">
-                        Payment Method
-                    </h3>
+<h3 class="form-heading">
+    Payment Method
+</h3>
 
+<label class="radio-option">
+    <input
+        type="radio"
+        name="payment"
+        value="cod"
+        checked
+    >
+    Cash on Delivery
+</label>
 
-                    <label class="radio-option">
+<label class="radio-option">
+    <input
+        type="radio"
+        name="payment"
+        value="bkash"
+    >
+    bKash Payment
+</label>
 
-                        <input
-                            type="radio"
-                            name="payment"
-                            value="cod"
-                            checked
-                        >
+<label class="radio-option">
+    <input
+        type="radio"
+        name="payment"
+        value="rocket"
+    >
+    Rocket Payment
+</label>
 
-                        Cash on Delivery
+<!-- ADVANCE PAYMENT DETAILS -->
 
-                    </label>
+<div id="advance-payment-details" style="display:none;">
+
+    <h4 id="payment-instructions-title">
+        Payment Instructions
+    </h4>
+
+    <p>
+        Send Money to:
+        <strong id="payment-receiver-number"></strong>
+    </p>
+
+    <p>
+        Amount:
+        <strong id="payment-amount"></strong>
+    </p>
+
+    <label for="payment-sender">
+        Your Payment Number
+    </label>
+
+    <input
+        type="tel"
+        id="payment-sender"
+        placeholder="Enter sender number"
+        autocomplete="off"
+    >
+
+    <label for="payment-transaction">
+        Transaction ID (TrxID)
+    </label>
+
+    <input
+        type="text"
+        id="payment-transaction"
+        placeholder="Enter Transaction ID"
+        autocomplete="off"
+    >
+
+    <p>
+        Payment will be verified before
+        confirming the paid status.
+    </p>
+
+</div>
 
                 </form>
 
