@@ -17,9 +17,20 @@ function getDeliveryCharge() {
 }
 
 // CART
-let cart = JSON.parse(
-    localStorage.getItem('nijerBajarCart')
-) || [];
+
+let cart = [];
+
+try {
+    const savedCart = JSON.parse(
+        localStorage.getItem('nijerBajarCart') || '[]'
+    );
+
+    cart = Array.isArray(savedCart) ? savedCart : [];
+
+} catch (error) {
+    console.warn('Invalid cart data:', error);
+    cart = [];
+}
 
 const cartCount = document.querySelector('.cart');
 
@@ -227,6 +238,7 @@ const districts = {
 ========================= */
 
 function updateDeliveryByDistrict() {
+
     if (!districtSelect) return;
 
     const district = districtSelect.value.trim().toLowerCase();
@@ -239,16 +251,34 @@ function updateDeliveryByDistrict() {
         'input[name="delivery"][value="outside"]'
     );
 
+    if (insideDhaka) {
+        insideDhaka.disabled = true;
+    }
+
+    if (outsideDhaka) {
+        outsideDhaka.disabled = true;
+    }
+
     if (district === 'dhaka') {
+
         if (insideDhaka) insideDhaka.checked = true;
+
     } else if (district !== '') {
+
         if (outsideDhaka) outsideDhaka.checked = true;
+
     } else {
+
         if (insideDhaka) insideDhaka.checked = true;
+
     }
 
     updateOrderSummary();
 }
+
+// Lock delivery options on page load
+updateDeliveryByDistrict();
+
 
 
 /* =========================
@@ -370,6 +400,8 @@ if (confirmOrderButton) {
         }
 
         // Update delivery based on district
+
+
         updateDeliveryByDistrict();
 
         const deliveryCharge = getDeliveryCharge();
@@ -442,6 +474,41 @@ if (confirmOrderButton) {
                 body: JSON.stringify(orderData)
             });
 
+
+            
+// Save order history in customer's browser
+let orderHistory = [];
+
+try {
+    orderHistory = JSON.parse(
+        localStorage.getItem('nijerBajarOrders') || '[]'
+    );
+
+    if (!Array.isArray(orderHistory)) orderHistory = [];
+} catch (error) {
+    orderHistory = [];
+}
+
+// Avoid saving the same order twice
+if (!orderHistory.some(order => order.orderId === orderData.orderId)) {
+
+    orderHistory.unshift({
+        orderId: orderData.orderId,
+        date: orderData.date,
+        products: orderData.products,
+        total: orderData.total,
+        delivery: orderData.delivery,
+        paymentMethod: orderData.paymentMethod,
+        paymentStatus: orderData.paymentStatus,
+        status: 'Order Submitted'
+    });
+
+    localStorage.setItem(
+        'nijerBajarOrders',
+        JSON.stringify(orderHistory)
+    );
+}
+
             const successModal = document.getElementById('success-modal');
 
             if (successModal) {
@@ -470,30 +537,68 @@ if (successOkButton && successModal) {
 
     successOkButton.addEventListener('click', function() {
 
+        // 1. Close success popup after OK
         successModal.classList.remove('show');
 
+        // 2. Clear cart products
         cart = [];
+
         saveCart();
         updateCartCount();
         displayCartProducts();
 
-        const form = document.querySelector('.customer-form form');
-        if (form) form.reset();
+        // 3. Clear customer information
+        const customerFields = [
+            'name',
+            'mobile',
+            'area',
+            'address',
+            'payment-sender',
+            'payment-transaction'
+        ];
 
+        customerFields.forEach(function(id) {
+
+            const field = document.getElementById(id);
+
+            if (field) {
+                field.value = '';
+            }
+
+        });
+
+        // 4. Reset division
+        if (divisionSelect) {
+            divisionSelect.value = '';
+        }
+
+        // 5. Reset district dropdown
         if (districtSelect) {
             districtSelect.innerHTML =
                 '<option value="">Select District</option>';
         }
 
-        const insideDelivery = document.querySelector(
-            'input[name="delivery"][value="inside"]'
+        // 6. Keep delivery option unchanged
+        // Inside / Outside Dhaka stays selected
+
+        // 7. Reset payment method to COD
+        const codPayment = document.querySelector(
+            'input[name="payment"][value="cod"]'
         );
 
-        if (insideDelivery) insideDelivery.checked = true;
+        if (codPayment) {
+            codPayment.checked = true;
+        }
 
+        updatePaymentMethod();
+
+        // 8. Update cart summary
         updateOrderSummary();
+
     });
+
 }
+
 
 
 /* =========================
@@ -616,10 +721,17 @@ if (productGrid) {
                 const imageDiv = document.createElement('div');
                 imageDiv.className = 'product-image';
 
-                const img = document.createElement('img');
-                img.src = product['Image URL'] || '';
-                img.alt = product['Product Name'] || 'Product';
-                imageDiv.appendChild(img);
+                
+const img = document.createElement('img');
+
+img.src = product['Image URL'] || '';
+img.alt = product['Product Name'] || 'Product';
+
+// Performance Optimization
+img.loading = 'lazy';
+img.decoding = 'async';
+
+imageDiv.appendChild(img);
 
                 if (document.getElementById('popular')) {
                     const badge = document.createElement('span');
@@ -825,4 +937,37 @@ if (heroSlides.length > 1) {
 
     }, 4000);
 
+}
+
+/* =========================
+   GOLD BAR MOBILE MENU
+========================= */
+
+const topMenuButton = document.getElementById('top-menu-btn');
+const topMobileNav = document.getElementById('top-mobile-nav');
+
+if (topMenuButton && topMobileNav) {
+
+    topMenuButton.addEventListener('click', function() {
+
+        const isOpen = topMobileNav.classList.toggle('open');
+
+        topMenuButton.textContent = isOpen ? '✕' : '☰';
+
+        topMenuButton.setAttribute(
+            'aria-expanded',
+            String(isOpen)
+        );
+    });
+
+    topMobileNav.querySelectorAll('a').forEach(function(link) {
+
+        link.addEventListener('click', function() {
+
+            topMobileNav.classList.remove('open');
+            topMenuButton.textContent = '☰';
+            topMenuButton.setAttribute('aria-expanded', 'false');
+
+        });
+    });
 }

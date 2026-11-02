@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Nijer Bajar</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .orders-page {
+            max-width: 850px;
+            margin: 50px auto;
+            padding: 0 18px;
+            min-height: 60vh;
+        }
+
+        .orders-page h1 {
+            margin-bottom: 25px;
+        }
+
+        .history-card {
+            background: #f1eee7;
+            border: 1px solid #ddd7ca;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .history-card h3 {
+            margin: 0 0 12px;
+        }
+
+        .history-card p {
+            margin: 8px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .history-card strong {
+            color: #111;
+        }
+
+        .orders-empty {
+            text-align: center;
+            padding: 45px 15px;
+            background: #f1eee7;
+            border-radius: 10px;
+        }
+
+        .back-cart {
+            display: inline-block;
+            margin: 15px 0;
+            padding: 11px 20px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+
+        
+.delete-order-btn {
+    margin-top: 15px;
+    padding: 10px 16px;
+    background: #fff;
+    color: #b42318;
+    border: 1px solid #e4b4ae;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-order-btn:hover {
+    background: #fff0ee;
+}
+
+    </style>
+</head>
+
+<body>
+
+    <main class="orders-page">
+
+        <h1>📦 My Orders</h1>
+
+        <div id="order-history"></div>
+
+        <a href="cart.html" class="back-cart">
+            ← Back to Cart
+        </a>
+
+    </main>
+
+    <script>
+        const container = document.getElementById('order-history');
+
+        let orders = [];
+
+        try {
+            orders = JSON.parse(
+                localStorage.getItem('nijerBajarOrders') || '[]'
+            );
+
+            if (!Array.isArray(orders)) orders = [];
+        } catch (error) {
+            orders = [];
+        }
+
+        if (orders.length === 0) {
+            container.innerHTML = `
+                <div class="orders-empty">
+                    <h2>No Orders Yet</h2>
+                    <p>Your order history will appear here.</p>
+                </div>
+            `;
+
+        } else {
+            orders.forEach(function(order, index) {
+
+                const card = document.createElement('div');
+                card.className = 'history-card';
+
+                const fields = [
+                    ['Order ID', order.orderId],
+                    ['Date', order.date],
+                    ['Products', order.products],
+                    ['Total', order.total],
+                    ['Delivery', order.delivery],
+                    ['Payment', order.paymentMethod],
+                    ['Payment Status', order.paymentStatus],
+                    ['Order Status', order.status || 'Order Submitted']
+                ];
+
+                const heading = document.createElement('h3');
+                heading.textContent = 'Order ' + (order.orderId || '');
+                card.appendChild(heading);
+
+                fields.forEach(function(field) {
+                    const p = document.createElement('p');
+                    const strong = document.createElement('strong');
+
+                    strong.textContent = field[0] + ': ';
+                    p.appendChild(strong);
+                    p.appendChild(
+                        document.createTextNode(field[1] || '—')
+                    );
+
+                    card.appendChild(p);
+                });
+
+                
+// Delete order from browser history
+const deleteButton = document.createElement('button');
+
+deleteButton.textContent = '🗑 Delete History';
+deleteButton.className = 'delete-order-btn';
+
+deleteButton.addEventListener('click', function() {
+
+    const confirmed = confirm(
+        'Remove this order from your history? This will not cancel the actual order.'
+    );
+
+    if (!confirmed) return;
+
+    orders.splice(index, 1);
+
+    localStorage.setItem(
+        'nijerBajarOrders',
+        JSON.stringify(orders)
+    );
+
+    window.location.reload();
+});
+
+card.appendChild(deleteButton);
+
+
+                container.appendChild(card);
+            });
+        }
+    </script>
+
+</body>
+</html>
